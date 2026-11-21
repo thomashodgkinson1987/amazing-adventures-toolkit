@@ -1,13 +1,9 @@
 //! End-to-end apply/remove round-trip against a real (stock) game executable.
 //!
 //! This needs the actual `AmazingAdventures2.exe`, which is not in the repository, so the
-//! test is skipped unless `AAATW_STOCK_EXE` points at a pristine copy. Run it against the
-//! wiki's backup, for example:
-//!
-//! ```sh
-//! AAATW_STOCK_EXE=/workspace/llm-wiki/backups/AmazingAdventures2.exe.orig \
-//!     cargo test --test real_exe -- --nocapture
-//! ```
+//! test is skipped unless `AAATW_STOCK_EXE` points at a pristine copy — for example a
+//! copy saved from a Steam install or from *Verify integrity of game files* (stock
+//! SHA-256 `275b8b27…c00e3`).
 
 use std::path::PathBuf;
 use std::process::Command;
