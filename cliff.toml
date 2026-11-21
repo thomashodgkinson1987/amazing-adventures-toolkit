@@ -1,0 +1,48 @@
+# git-cliff configuration — https://git-cliff.org/docs/configuration
+#
+# Release notes are generated from Conventional Commits (see CONTRIBUTING.md).
+# The release workflow runs: git-cliff --latest --strip header
+
+[changelog]
+body = """
+{% if version %}\
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+    ## [Unreleased]
+{% endif %}\
+{% for entry in commits | commit_groups(groups=commit_parsers_groups) %}
+    ### {{ entry.group | striptags | trim | upper_first }}
+    {% for commit in entry.commits %}
+        - {% if commit.scope %}**{{ commit.scope }}:** {% endif %}\
+            {% if commit.breaking %}[**breaking**] {% endif %}\
+            {{ commit.message | upper_first }}\
+    {%- endfor %}
+{% endfor %}
+"""
+trim = true
+render_always = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = false
+commit_parsers = [
+    { message = "^feat", group = "<!-- 0 -->✨ Features" },
+    { message = "^fix", group = "<!-- 1 -->🐛 Bug Fixes" },
+    { message = "^refactor", group = "<!-- 2 -->♻️ Refactor" },
+    { message = "^docs", group = "<!-- 3 -->📝 Documentation" },
+    { message = "^perf", group = "<!-- 4 -->⚡ Performance" },
+    { message = "^test", group = "<!-- 5 -->🧪 Tests" },
+    { message = "^style", group = "<!-- 6 -->🎨 Styling" },
+    { message = "^build", group = "<!-- 7 -->🏗️ Build & CI" },
+    { message = "^ci", group = "<!-- 7 -->🏗️ Build & CI" },
+    { message = "^chore", group = "<!-- 8 -->🧹 Chores" },
+    { message = "^revert", group = "<!-- 9 -->◀️ Revert" },
+    { message = ".*", group = "<!-- 10 -->💼 Other" },
+]
+filter_commits = false
+topo_order = false
+topo_order_commits = true
+sort_commits = "oldest"
+recurse_submodules = false

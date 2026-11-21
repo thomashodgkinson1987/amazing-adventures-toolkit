@@ -81,6 +81,30 @@ feat(cli)!: rename the `graphics` subcommand
 The types line up with [versioning](#versioning) and [`CHANGELOG.md`](CHANGELOG.md), so
 release notes can be assembled from the commit history.
 
+## Releasing
+
+Releases are cut from `main` and published by
+[`.github/workflows/release.yml`](.github/workflows/release.yml).
+
+1. Make sure `develop` is green, then merge it into `main`.
+2. Bump `version` in [`Cargo.toml`](Cargo.toml) and rename the changelog's
+   `Unreleased` section to the new version (e.g. `## [0.1.1] - YYYY-MM-DD`).
+3. Commit and push `main` (a `chore(release): vX.Y.Z` commit is fine).
+4. Create and push an annotated, signed tag:
+
+   ```sh
+   git tag -s vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+
+5. The release workflow builds every platform, generates the notes from the
+   commit history with [git-cliff](https://git-cliff.org) (see
+   [`cliff.toml`](cliff.toml)), attaches the archives and a `SHA256SUMS` file,
+   and publishes the GitHub Release.
+
+The tag and the `Cargo.toml` version must match; artifact names are derived from
+the tag.
+
 ## Tests
 
 Unit tests cover the pure logic (splash site classification/reconstruction, asset

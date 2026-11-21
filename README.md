@@ -39,6 +39,29 @@ amazing-adventures-toolkit graphics apply
 amazing-adventures-toolkit splash apply
 ```
 
+## Downloads
+
+Prebuilt binaries are published on the
+[Releases page](https://github.com/thomashodgkinson1987/amazing-adventures-toolkit/releases/latest),
+named `amazing-adventures-toolkit-<version>-<target>`:
+
+| Platform | Archive |
+|---|---|
+| Windows (x86_64) | `…-x86_64-pc-windows-msvc.zip` |
+| Linux (x86_64) | `…-x86_64-unknown-linux-musl.tar.gz` |
+| Linux (aarch64) | `…-aarch64-unknown-linux-musl.tar.gz` |
+| macOS (Apple Silicon) | `…-aarch64-apple-darwin.tar.gz` |
+| macOS (Intel) | `…-x86_64-apple-darwin.tar.gz` |
+
+Each release also publishes a `SHA256SUMS` file. The Linux binaries are
+statically linked against musl, so they run on any distribution. Build from
+source with the [instructions below](#building) if you would rather compile it
+yourself.
+
+> The binaries are unsigned, so macOS may quarantine the download — clear it with
+> `xattr -d com.apple.quarantine ./amazing-adventures-toolkit` — and Windows may
+> show a SmartScreen warning.
+
 ## The Steam launch option (important)
 
 Under Proton/Wine, cnc-ddraw is only actually used if Wine is told to prefer the local

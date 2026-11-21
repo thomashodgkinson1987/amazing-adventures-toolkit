@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Static musl builds run on any Linux distribution.
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            cross: true
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+            cross: true
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            cross: false
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            cross: false
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            cross: false
+    steps:
+      - uses: actions/checkout@v4
+
+      # Compiles with `cross` for the Linux musl targets and with native `cargo`
+      # elsewhere; installs the toolchain, target and cache automatically.
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v1
+        with:
+          command: build
+          target: ${{ matrix.target }}
+          args: "--locked --release"
+          strip: true
+          force-use-cross: ${{ matrix.cross }}
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: echo "version=${{ github.ref_type == 'tag' && github.ref_name || inputs.tag }}" >> "$GITHUB_OUTPUT"
+
+      - name: Package
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          name="amazing-adventures-toolkit-$VERSION-$TARGET"
+          out="target/$TARGET/release"
+          mkdir -p "dist/$name"
+          if [ -f "$out/amazing-adventures-toolkit.exe" ]; then
+            cp "$out/amazing-adventures-toolkit.exe" "dist/$name/"
+          else
+            cp "$out/amazing-adventures-toolkit" "dist/$name/"
+          fi
+          cp README.md LICENSE "dist/$name/"
+          if [[ "$TARGET" == *windows* ]]; then
+            7z a "dist/$name.zip" "dist/$name" >/dev/null
+          else
+            tar -C dist -czf "dist/$name.tar.gz" "$name"
+          fi
+          rm -rf "dist/$name"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: publish
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Full history so git-cliff can find the tags it needs.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        env:
+          OUTPUT: NOTES.md
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || inputs.tag }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || inputs.tag }}
+          body_path: NOTES.md
+          files: dist/*
+          fail_on_unmatched_files: true
