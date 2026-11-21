@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Build-provenance attestations on release artifacts, verifiable with
+  `gh attestation verify`.
+
+### Changed
+
+- README badges and an AI-assistance disclosure.
+
 ## [0.1.1] - 2026-11-21
 
 ### Added
