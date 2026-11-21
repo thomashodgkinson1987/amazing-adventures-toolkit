@@ -3,6 +3,10 @@
 Thanks for taking a look! This is a small tool, but here is how the repository is
 organised.
 
+> **AI assistance:** this project is developed with the help of an AI coding agent. All
+> changes — human or AI-assisted — go through the same review and testing as described
+> below.
+
 ## Branching model
 
 - **`main`** is the _live working copy_. It should always build, pass its tests and be

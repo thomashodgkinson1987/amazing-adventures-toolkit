@@ -1,5 +1,11 @@
 # Amazing Adventures Toolkit
 
+[![CI](https://github.com/thomashodgkinson1987/amazing-adventures-toolkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thomashodgkinson1987/amazing-adventures-toolkit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/thomashodgkinson1987/amazing-adventures-toolkit)](https://github.com/thomashodgkinson1987/amazing-adventures-toolkit/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/thomashodgkinson1987/amazing-adventures-toolkit)](LICENSE)
+[![Rust edition 2024](https://img.shields.io/badge/rust-edition%202024-orange)](https://doc.rust-lang.org/edition-guide/rust-2024/)
+[![Platforms](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macOS-blue)](#downloads)
+
 A small cross-platform terminal helper for the Steam title **Amazing Adventures Around
 the World** (Steam AppID **3530**). It does two things, each fully reversible:
 
@@ -127,6 +133,13 @@ as a child process whose working directory is the game folder. That is why a loc
 inside the wrapper's overlay.
 
 With thanks to [cnc-ddraw](https://github.com/FunkyFr3sh/cnc-ddraw) by FunkyFr3sh.
+
+## AI disclosure
+
+This project was developed with the assistance of an AI coding agent. Every change is
+reviewed, built and tested by the maintainer (`cargo test --all`, plus the end-to-end
+EXE round-trip), and the maintainer takes full responsibility for the code and its
+behaviour. AI-generated content has been checked for correctness and licensing.
 
 ## License
 
