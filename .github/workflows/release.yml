@@ -10,8 +10,9 @@ on:
         required: true
         type: string
 
+# Least privilege by default; the `release` job opts into what it needs.
 permissions:
-  contents: write
+  contents: read
 
 env:
   CARGO_TERM_COLOR: always
@@ -93,6 +94,10 @@ jobs:
     name: publish
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create/update the GitHub Release
+      id-token: write # OIDC identity used to sign the attestation
+      attestations: write # store the attestation
     steps:
       # Full history so git-cliff can find the tags it needs.
       - uses: actions/checkout@v5
@@ -117,6 +122,13 @@ jobs:
         run: |
           cd dist
           sha256sum * > SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
 
       - name: Publish release
         uses: softprops/action-gh-release@v3
